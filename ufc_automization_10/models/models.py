@@ -42,7 +42,7 @@ class ufc_automization(models.Model):
 	weight                      = fields.Float()
 	relevant_purchase_invoice   = fields.Many2one('ufc.auto',string="Relevant Purchase Invoice")
 	sale_price                  = fields.Float(string="Company Price")
-	purchase_price              = fields.Float('Total Freight')
+	purchase_price              = fields.Float('Actual Truck Rate')
 	pun_amount                  = fields.Float('Punjab Amount')
 	sin_amount                  = fields.Float('Sindh Amount')
 	pun_dist                    = fields.Float('Punjab Distance')
@@ -56,7 +56,7 @@ class ufc_automization(models.Model):
 	expected_company_price      = fields.Float(string = 'Expected Price')
 	expected_profit             = fields.Float(string='Expected Profit')
 	ean13                       = fields.Float()
-	fc_paid_amount              = fields.Float(string='ADV Paid To Driver')
+	fc_paid_amount              = fields.Float(string='Advance Payment')
 	remaining                   = fields.Float(string='Payable')
 	driver_photo                = fields.Binary('Driver Photo')
 	billty_photo                = fields.Binary('Bilty Photo')
@@ -247,9 +247,7 @@ class ufc_automization(models.Model):
 							self.sale_price = self.expected_company_price
 					else:
 						self.distance = 0
-			self.expected_profit = self.expected_company_price - self.purchase_price
 			self.tax2percent = self.sale_price * .02
-			self.profit      = self.sale_price - self.purchase_price - self.tax2percent
 		if self.customer.name == "Engro Fertilizer Dharki":
 			for x in rates_table1.rates_table_dar:
 				if x.distance_from  <= self.distance == x.distance_to:
@@ -261,9 +259,6 @@ class ufc_automization(models.Model):
 							self.expected_company_price = self.distance * x.dharki_zone * self.weight
 							self.sale_price = self.expected_company_price
 					elif self.region.dar_zone == "fsd" and self.region.area.name == x.area.name:
-						print "bbbbbbbbbbbbbbbbbbb"
-						print "bbbbbbbbbbbbbbbbbbb"
-						print "bbbbbbbbbbbbbbbbbbb"
 						if x.fixed == True:
 							self.expected_company_price = x.faislabad_zone * self.weight
 							self.sale_price = self.expected_company_price
@@ -291,9 +286,7 @@ class ufc_automization(models.Model):
 						else:
 							self.expected_company_price = self.distance * x.multan_zone * self.weight
 							self.sale_price = self.expected_company_price
-			self.expected_profit = self.expected_company_price - self.purchase_price
 			self.tax2percent = self.sale_price * .02
-			self.profit      = self.sale_price - self.purchase_price - self.tax2percent
 		if self.customer.name == "FFC Mir Pur Mathelo":
 			for x in rates_table1.rates_table_mir:
 				new = 0
@@ -346,9 +339,7 @@ class ufc_automization(models.Model):
 							self.sale_price = self.expected_company_price
 					else:
 						self.distance = 0
-			self.expected_profit = self.expected_company_price - self.purchase_price
 			self.tax2percent = self.sale_price * .02
-			self.profit      = self.sale_price - self.purchase_price - self.tax2percent
 
 		if self.customer.name == "Engro Port Karachi":
 			per_km = self.sale_price/self.distance
@@ -398,10 +389,22 @@ class ufc_automization(models.Model):
 	# ================================calculating tax and profit=============================
 
 
-	# @api.onchange('purchase_price')
-	# def tax_cal(self):
-	# 	self.tax2percent = self.sale_price * .02
-	# 	self.profit      = self.sale_price - self.purchase_price - self.tax2percent
+	@api.onchange('purchase_price')
+	def tax_cal(self):
+		if self.purchase_price:
+			self.profit = self.sale_price - self.purchase_price - self.tax2percent
+			self.expected_profit = self.expected_company_price - self.purchase_price
+
+
+
+	# @api.multi
+	# def challan(self):
+	# 	rec = self.env['ufc.auto'].search([])
+	# 	for x in rec:
+	# 		if x.purchase_price:
+	# 			x.profit = x.sale_price - x.purchase_price - x.tax2percent
+	# 			x.expected_profit = x.expected_company_price - x.purchase_price
+
 
 
 	# ============================calculating remaining and total paid=========================

@@ -52,7 +52,7 @@
                 <field name="invoice_date" attrs="{'readonly':[('state','in',['done','paid'])]}"/>
                 <field name="journal" attrs="{'readonly':[('state','in',['bilty','done','paid'])]}"/>
                 <field name="account" attrs="{'readonly':[('state','in',['bilty','done','paid'])]}"/>
-                <field name="branch" attrs="{'readonly':[('state','in',['bilty','done','paid'])]}"/>
+                <field name="branch" readonly="1"/>
               </group>
 
             </group>
@@ -110,8 +110,8 @@
             <group >
 
               <group string="Shipment Details">
-                <field name="expected_company_price" />
-                <field name="expected_profit"/>
+                <field name="expected_company_price" readonly="1"/>
+                <field name="expected_profit" readonly="1"/>
                 <field name="ean13" attrs="{'readonly':[('state','in',['bilty','done','paid'])]}"/>
               </group>
 
@@ -194,7 +194,7 @@
       <field name="model">ufc.auto</field> 
       <field name="type">tree</field> 
       <field name="arch" type="xml"> 
-      <tree string="Pre Invoices" default_order="order_no desc"> 
+      <tree string="Before Invoices" default_order="order_no desc"> 
        
             <field name="customer"/>
             <field name="invoice_date"/>
@@ -208,6 +208,7 @@
             <field name="weight"/>
             <field name="sale_price"/>
             <field name="purchase_price"/>
+            <field name="expected_profit"/>
             <field name="fc_paid_amount"/>
             <field name="remaining"/>
       
@@ -440,18 +441,18 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_new_module">
-      <field name="name">Pre Invoices</field>
+      <field name="name">Before Invoices</field>
       <field name="res_model">ufc.auto</field>
       <field name="view_mode">tree,form</field>
       <field name="domain">[('state', 'in', ('bilty', 'done','paid'))]</field>
       <field name="context">{'readonly_by_pass': True}</field>
     </record>
 
-  <menuitem id="menu_new_module" name="Pre Invoices" parent="account.menu_finance"  sequence="0"/>
+  <menuitem id="menu_new_module" name="Before Invoices" parent="account.menu_finance"  sequence="0"/>
 
  
 <menuitem id="menu_new_module_child0" name="Plan" parent="menu_new_module" action="plan_menu_action" sequence="0" />
-<menuitem id="menu_new_module_child1" name="Pre Invoices" parent="menu_new_module" action="action_new_module" sequence="1"/>
+<menuitem id="menu_new_module_child1" name="Before Invoices" parent="menu_new_module" action="action_new_module" sequence="1"/>
 
 <record model="ir.actions.act_window" id="region_menu_action">
   <field name="name">Regions</field>
